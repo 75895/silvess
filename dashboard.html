@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - SILVESS</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <button class="mobile-toggle" id="mobileToggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <div class="dashboard-wrapper">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <img src="assets/images/silvess_logo.png" alt="SILVESS">
+                <h2>SILVESS</h2>
+                <p>Gestão de Restaurantes</p>
+            </div>
+
+            <nav class="sidebar-menu">
+                <div class="menu-item active" data-page="home">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </div>
+                <div class="menu-item" data-page="ingredientes">
+                    <i class="fas fa-box"></i>
+                    <span>Ingredientes</span>
+                </div>
+                <div class="menu-item" data-page="fichas">
+                    <i class="fas fa-utensils"></i>
+                    <span>Fichas Técnicas</span>
+                </div>
+                <div class="menu-item" data-page="inventario">
+                    <i class="fas fa-clipboard-list"></i>
+                    <span>Inventário</span>
+                </div>
+                <div class="menu-item" data-page="cardapio">
+                    <i class="fas fa-book-open"></i>
+                    <span>Cardápios</span>
+                </div>
+                <div class="menu-item" data-page="mesas">
+                    <i class="fas fa-qrcode"></i>
+                    <span>Mesas & QR Codes</span>
+                </div>
+                <div class="menu-item" data-page="vendas">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Vendas</span>
+                </div>
+                <div class="menu-item" data-page="relatorios">
+                    <i class="fas fa-file-alt"></i>
+                    <span>Relatórios</span>
+                </div>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar" id="userAvatar">A</div>
+                    <div class="user-details">
+                        <h4 id="userName">Usuário</h4>
+                        <p id="userEmail">email@exemplo.com</p>
+                    </div>
+                </div>
+                <button class="btn-logout" id="btnLogout">
+                    <i class="fas fa-sign-out-alt"></i> Sair
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="content-wrapper">
+                <!-- Dashboard Header -->
+                <div class="dashboard-header">
+                    <div>
+                        <h1 id="pageTitle">Dashboard</h1>
+                        <div class="breadcrumb" id="breadcrumb">Home / Dashboard</div>
+                    </div>
+                    <div class="header-actions">
+                        <button class="btn btn-primary" id="btnRefresh">
+                            <i class="fas fa-sync-alt"></i> Atualizar
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="stats-grid" id="statsGrid">
+                    <div class="stat-card success">
+                        <div class="stat-header">
+                            <div class="stat-title">Ingredientes</div>
+                            <div class="stat-icon">
+                                <i class="fas fa-box"></i>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="statIngredientes">0</div>
+                        <div class="stat-change" id="statIngredientesChange">Ativos no sistema</div>
+                    </div>
+
+                    <div class="stat-card danger">
+                        <div class="stat-header">
+                            <div class="stat-title">Estoque Baixo</div>
+                            <div class="stat-icon">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="statEstoqueBaixo">0</div>
+                        <div class="stat-change">Requer atenção</div>
+                    </div>
+
+                    <div class="stat-card info">
+                        <div class="stat-header">
+                            <div class="stat-title">Fichas Técnicas</div>
+                            <div class="stat-icon">
+                                <i class="fas fa-utensils"></i>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="statFichas">0</div>
+                        <div class="stat-change">Pratos cadastrados</div>
+                    </div>
+
+                    <div class="stat-card warning">
+                        <div class="stat-header">
+                            <div class="stat-title">Vendas Hoje</div>
+                            <div class="stat-icon">
+                                <i class="fas fa-dollar-sign"></i>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="statVendasHoje">R$ 0,00</div>
+                        <div class="stat-change" id="statVendasHojeQtd">0 vendas</div>
+                    </div>
+                </div>
+
+                <!-- Content Area -->
+                <div id="contentArea">
+                    <!-- Conteúdo dinâmico será carregado aqui -->
+                    <div class="content-section">
+                        <div class="section-header">
+                            <h2 class="section-title">Bem-vindo ao SILVESS</h2>
+                        </div>
+                        <div class="section-body">
+                            <p style="font-size: 18px; color: var(--text-secondary); line-height: 1.8;">
+                                Sistema completo de gestão para restaurantes. Utilize o menu lateral para navegar entre as funcionalidades:
+                            </p>
+                            <div class="row mt-4">
+                                <div class="col-6">
+                                    <div class="card">
+                                        <h3 style="color: var(--primary-color); margin-bottom: 15px;">
+                                            <i class="fas fa-box"></i> Gestão de Estoque
+                                        </h3>
+                                        <p>Controle completo de ingredientes, movimentações e alertas de estoque mínimo.</p>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="card">
+                                        <h3 style="color: var(--primary-color); margin-bottom: 15px;">
+                                            <i class="fas fa-utensils"></i> Fichas Técnicas
+                                        </h3>
+                                        <p>Cadastre pratos com gramatura detalhada e cálculo automático de custos.</p>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="card">
+                                        <h3 style="color: var(--primary-color); margin-bottom: 15px;">
+                                            <i class="fas fa-clipboard-list"></i> Inventário
+                                        </h3>
+                                        <p>Realize inventários mensais editáveis e corrija divergências facilmente.</p>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="card">
+                                        <h3 style="color: var(--primary-color); margin-bottom: 15px;">
+                                            <i class="fas fa-qrcode"></i> QR Codes
+                                        </h3>
+                                        <p>Gere QR codes para mesas e gerencie cardápios digitais em tempo real.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+</html>

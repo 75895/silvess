@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cardápio - SILVESS</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3a5f 0%, #2c5282 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .header {
+            background: white;
+            border-radius: 16px 16px 0 0;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .header h1 {
+            color: #1e3a5f;
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        .header .mesa-info {
+            color: #c9a961;
+            font-size: 18px;
+            font-weight: 600;
+        }
+        .header .data {
+            color: #6c757d;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        .menu {
+            background: white;
+            border-radius: 0 0 16px 16px;
+            padding: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .categoria {
+            margin-bottom: 30px;
+        }
+        .categoria-titulo {
+            color: #1e3a5f;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #c9a961;
+        }
+        .prato {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .prato:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+        .prato-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 10px;
+        }
+        .prato-nome {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1e3a5f;
+        }
+        .prato-preco {
+            font-size: 24px;
+            font-weight: 700;
+            color: #28a745;
+        }
+        .prato-descricao {
+            color: #6c757d;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+        .prato-info {
+            display: flex;
+            gap: 15px;
+            font-size: 13px;
+            color: #6c757d;
+        }
+        .prato-info span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .indisponivel {
+            opacity: 0.5;
+            position: relative;
+        }
+        .indisponivel::after {
+            content: 'INDISPONÍVEL';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-15deg);
+            background: #dc3545;
+            color: white;
+            padding: 8px 20px;
+            font-weight: 700;
+            font-size: 18px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            color: white;
+            font-size: 18px;
+        }
+        .error {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            text-align: center;
+            color: #dc3545;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: white;
+            font-size: 14px;
+        }
+        .logo {
+            max-width: 200px;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="loading" class="loading">
+            <div style="font-size: 48px; margin-bottom: 20px;">🍽️</div>
+            <p>Carregando cardápio...</p>
+        </div>
+
+        <div id="content" style="display: none;">
+            <div class="header">
+                <img src="assets/images/silvess_logo.png" alt="SILVESS" class="logo">
+                <h1 id="cardapioNome">Cardápio do Dia</h1>
+                <div class="mesa-info" id="mesaInfo">Mesa #</div>
+                <div class="data" id="cardapioData"></div>
+            </div>
+
+            <div class="menu" id="menu">
+                <!-- Pratos serão carregados aqui -->
+            </div>
+        </div>
+
+        <div id="error" style="display: none;" class="error">
+            <div style="font-size: 48px; margin-bottom: 20px;">❌</div>
+            <h2>Cardápio não encontrado</h2>
+            <p style="margin-top: 15px;">Verifique o QR Code ou entre em contato com o atendente.</p>
+        </div>
+
+        <div class="footer">
+            <p>Powered by SILVESS - Sistema de Gestão de Restaurantes</p>
+        </div>
+    </div>
+
+    <script>
+        // Obter parâmetros da URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const mesaNumero = urlParams.get('mesa');
+        const cardapioId = urlParams.get('cardapio');
+
+        // Configuração da API
+        const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+            ? 'http://localhost:5000/api'
+            : 'https://seu-backend.onrender.com/api';
+
+        async function carregarCardapio() {
+            if (!cardapioId) {
+                mostrarErro();
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/cardapio/${cardapioId}`);
+                
+                if (!response.ok) {
+                    throw new Error('Cardápio não encontrado');
+                }
+
+                const cardapio = await response.json();
+                renderizarCardapio(cardapio);
+
+            } catch (error) {
+                console.error('Erro ao carregar cardápio:', error);
+                mostrarErro();
+            }
+        }
+
+        function renderizarCardapio(cardapio) {
+            document.getElementById('cardapioNome').textContent = cardapio.nome;
+            document.getElementById('mesaInfo').textContent = mesaNumero ? `Mesa ${mesaNumero}` : 'Cardápio Digital';
+            document.getElementById('cardapioData').textContent = new Date(cardapio.data).toLocaleDateString('pt-BR', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+
+            // Agrupar pratos por categoria
+            const pratosPorCategoria = {};
+            cardapio.pratos.forEach(prato => {
+                const categoria = prato.categoria || 'Outros';
+                if (!pratosPorCategoria[categoria]) {
+                    pratosPorCategoria[categoria] = [];
+                }
+                pratosPorCategoria[categoria].push(prato);
+            });
+
+            // Renderizar menu
+            const menu = document.getElementById('menu');
+            menu.innerHTML = '';
+
+            Object.keys(pratosPorCategoria).sort().forEach(categoria => {
+                const categoriaDiv = document.createElement('div');
+                categoriaDiv.className = 'categoria';
+                
+                categoriaDiv.innerHTML = `
+                    <div class="categoria-titulo">${categoria}</div>
+                `;
+
+                pratosPorCategoria[categoria].forEach(prato => {
+                    const pratoDiv = document.createElement('div');
+                    pratoDiv.className = `prato ${!prato.disponivel ? 'indisponivel' : ''}`;
+                    
+                    pratoDiv.innerHTML = `
+                        <div class="prato-header">
+                            <div class="prato-nome">${prato.nome_prato}</div>
+                            <div class="prato-preco">R$ ${prato.preco_venda.toFixed(2)}</div>
+                        </div>
+                        ${prato.descricao ? `<div class="prato-descricao">${prato.descricao}</div>` : ''}
+                        <div class="prato-info">
+                            ${prato.porcoes ? `<span>🍽️ ${prato.porcoes} ${prato.porcoes > 1 ? 'porções' : 'porção'}</span>` : ''}
+                            ${prato.tempo_preparo ? `<span>⏱️ ${prato.tempo_preparo} min</span>` : ''}
+                        </div>
+                    `;
+                    
+                    categoriaDiv.appendChild(pratoDiv);
+                });
+
+                menu.appendChild(categoriaDiv);
+            });
+
+            // Mostrar conteúdo
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('content').style.display = 'block';
+        }
+
+        function mostrarErro() {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('error').style.display = 'block';
+        }
+
+        // Carregar cardápio ao iniciar
+        carregarCardapio();
+
+        // Atualizar a cada 30 segundos para pegar mudanças de disponibilidade
+        setInterval(carregarCardapio, 30000);
+    </script>
+</body>
+</html>

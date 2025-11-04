@@ -1,7 +1,7 @@
 // ========== CONFIGURAÇÃO DA API ==========
 const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
     ? 'http://localhost:5000/api'
-    : 'https://seu-backend.onrender.com/api';
+    : 'https://silvess-backend.onrender.com';
 
 // ========== GERENCIAMENTO DE TOKEN ==========
 const TokenManager = {
@@ -50,7 +50,7 @@ class HttpClient {
                     // Token inválido ou expirado
                     TokenManager.remove();
                     UserManager.remove();
-                    window.location.href = 'login.html';
+                    window.location.href = '/login.html';
                 }
                 throw new Error(data.error || 'Erro na requisição');
             }
@@ -101,7 +101,7 @@ const AuthService = {
     logout: () => {
         TokenManager.remove();
         UserManager.remove();
-        window.location.href = 'login.html';
+        window.location.href = '/login.html';
     }
 };
 
@@ -228,7 +228,7 @@ const Utils = {
 // ========== PROTEÇÃO DE ROTAS ==========
 function requireAuth() {
     if (!UserManager.isAuthenticated()) {
-        window.location.href = 'login.html';
+        window.location.href = '/login.html';
         return false;
     }
     return true;
@@ -236,7 +236,7 @@ function requireAuth() {
 
 function redirectIfAuthenticated() {
     if (UserManager.isAuthenticated()) {
-        window.location.href = 'dashboard.html';
+        window.location.href = '/dashboard.html';
         return true;
     }
     return false;
